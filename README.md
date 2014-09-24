@@ -33,7 +33,14 @@ n = n0 + frac*(alpha_n*(1-n0) - (beta_n*n0));
 h = h0 + frac*(alpha_h*(1-h0) - (beta_h*h0));
 
 % Currents
-I_inj=0;
+
+%%%%%Trying to provide stumulus
+I_inj=zeros([1 1001]);
+I_inj_1=ones([1 51]); % Specify the duration of the stimulus in terms of the no. of samples 
+a=length(I_inj_1);
+I_inj(1, 1:a)=((5*10^(-6))*I_inj_1);
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%
 I_Na=(m.^3)*gNa.*h*(V-E_Na);
 I_K=(n.^4)*gK*(V-E_K);
 I_L=gL*(V-E_L);
