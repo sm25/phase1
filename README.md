@@ -4,7 +4,7 @@ phase1
 ece4784_project_phase1
 
 %%Hodgkin-Huxley
-t=0:0.001:0.1;
+t=0:0.00025:0.1;
 gK=0.036;
 gNa=0.12;
 gL=0.003;
@@ -36,8 +36,8 @@ h = h0 + frac.*(alpha_h.*(1-h0) - (beta_h.*h0));
 % Currents
 
 %%%%%Trying to provide stumulus
-I_inj=zeros([1 101]);
-I_inj_1=ones([1 5]); % Specify the duration of the stimulus in terms of the no. of samples 
+I_inj=zeros([1 401]);
+I_inj_1=ones([1 20]); % Specify the duration of the stimulus in terms of the no. of samples 
 a=length(I_inj_1);
 I_inj(1, 10:(9+a))=((5*10^(-6))*I_inj_1);
 
@@ -54,7 +54,9 @@ V_new=V+(frac.*(I_ion/C_m));
 V=V_new;
 end
 
-plot(t,V_rest,'r-');subplot(3,1,1);plot(t,gK,'r-');subplot(3,1,2);plot(t,gNa,'b-');subplot(3,1,3);
-plot(t,V_new,'r-');
-plot(t,n,'b-');
-plot(t,m,'g-');
+% plot(t,V_rest,'r-');subplot(3,1,1);plot(t,gK,'r-');subplot(3,1,2);plot(t,gNa,'b-');subplot(3,1,3);
+% plot(t,V_new,'r-');
+% plot(t,n,'b-');
+% plot(t,m,'g-');
+
+
