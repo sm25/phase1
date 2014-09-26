@@ -1,56 +1,88 @@
 %%Hodgkin-Huxley
-t=0:0.00025:0.1;
-gK=0.036;
-gNa=0.12;
-gL=0.003;
-E_K=(-1*0.012);
-E_Na=0.115;
-E_L=0.0106;
-V_rest=(-1*0.07);
-C_m=1*(10^(-6));
-frac=0.0001;
-V=V_rest;
-% % % % % % % % plot(t,V_rest,'r-');subplot(3,1,1);plot(t,gK,'r-');subplot(3,1,2);plot(t,gNa,'b-');subplot(3,1,3);
-% Gating variables
-for i=1:length(t)
-alpha_m= 0.1*((25-V)/exp((25-V)/10)-1);
-beta_m=4.*exp(((-1)*V)/18);
-alpha_n=0.01*((10-V)/(exp((10-V)/10)-1));
-beta_n=0.0125*exp(-V/80);
-alpha_h=0.07*exp(-V/20);
-beta_h=1./(exp((30-V)/10)+1);
+t=0:0.00025:0.1;    %Define time
+gK=0.036;           %Initial conductance for K
+gNa=0.12;           %Initial conductance for Na
+gL=0.003;           %Initial conductance for the leakage current
+E_K=(-1*0.012);     %Initial potential for K channels
+E_Na=0.115;         %Initial potential for Na channels
+E_L=0.0106;         %Initial potential associated with leakage
+V_rest=(-1*0.07);   %Resting potential
+C_m=1*(10^(-6));    %Membrane capacitance
+frac=0.00025;       %factor by which time is incrementing
 
-m0 = alpha_m./(alpha_m+beta_m);
-n0 = alpha_n./(alpha_n+beta_n);
-h0 = alpha_h./(alpha_h+beta_h);
+%%Initializing vectors!!
 
-m = m0 + frac.*(alpha_m*(1-m0) - (beta_m.*m0));
-n = n0 + frac.*(alpha_n*(1-n0) - (beta_n.*n0));
-h = h0 + frac.*(alpha_h.*(1-h0) - (beta_h.*h0));
+%Initialize V with the first value as V_rest
+V_new=zeros([1 length(t)]);     
+V_i=zeros([1 (length(t)-1)]);
+V=[V_rest V_i];
+%Initialize the gating variables
+alpha_m=zeros([1 length(t)]);
+alpha_n=zeros([1 length(t)]);
+alpha_h=zeros([1 length(t)]);
+beta_m=zeros([1 length(t)]);
+beta_n=zeros([1 length(t)]);
+beta_h=zeros([1 length(t)]);
+%Initialize the conductance related variables
+m0=zeros([1 length(t)]);
+n0=zeros([1 length(t)]);
+h0=zeros([1 length(t)]);
+m=zeros([1 length(t)]);
+n=zeros([1 length(t)]);
+h=zeros([1 length(t)]);
+%Initialize the various current vectors
+I_Na=zeros([1 length(t)]);
+I_K=zeros([1 length(t)]);
+I_L=zeros([1 length(t)]);
+I_ion=zeros([1 length(t)]);
 
-% Currents
 
 %%%%%Trying to provide stumulus
-I_inj=zeros([1 401]);
-I_inj_1=ones([1 20]); % Specify the duration of the stimulus in terms of the no. of samples 
-a=length(I_inj_1);
-I_inj(1, 10:(9+a))=((5*10^(-6))*I_inj_1);
+I_inj=zeros([1 length(t)]);
+% % I_inj_1=ones([1 20]); % Specify the duration of the stimulus in terms of the no. of samples 
+% % a=length(I_inj_1);
+% % I_inj(1, 10:(9+a))=((5*10^(-6))*I_inj_1);
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%
-I_Na=(m.^3)*gNa.*h.*(V-E_Na);
-I_K=(n.^4)*gK.*(V-E_K);
-I_L=gL.*(V-E_L);
-I_ion=I_inj-(I_Na)-(I_K)-(I_L);
 
-%Derivatives
+for i=1:length(t)
+    
+%Calculate values for the gating variables
+alpha_m(i)= 0.1*((25-V(i))/exp((25-V(i))/10)-1);
+beta_m(i)=4.*exp(((-1)*V(i))/18);
+alpha_n(i)=0.01*((10-V(i))/(exp((10-V(i))/10)-1));
+beta_n(i)=0.0125*exp(-V(i)/80);
+alpha_h(i)=0.07*exp(-V(i)/20);
+beta_h(i)=1./(exp((30-V(i))/10)+1);
 
-% V_new=zeros([1 1001]);
-V_new=V+(frac.*(I_ion/C_m));
-V=V_new;
+
+%Calculate values for the conductance related variables
+
+m0(i) = alpha_m(i)./(alpha_m(i)+beta_m(i));
+n0(i) = alpha_n(i)./(alpha_n(i)+beta_n(i));
+h0(i) = alpha_h(i)./(alpha_h(i)+beta_h(i));
+
+
+%Update the variables to the next value using Euler's method
+
+m(i) = m0(i) + frac.*(alpha_m(i).*(1-m0(i)) - (beta_m(i).*m0(i)));
+n(i) = n0(i) + frac.*(alpha_n(i).*(1-n0(i)) - (beta_n(i).*n0(i)));
+h(i) = h0(i) + frac.*(alpha_h(i).*(1-h0(i)) - (beta_h(i).*h0(i)));
+
+% Currents, calculate the current values
+
+I_Na(i)=(m(i).^3)*gNa.*h(i).*(V(i)-E_Na);
+I_K(i)=(n(i).^4)*gK.*(V(i)-E_K);
+I_L(i)=gL.*(V(i)-E_L);
+I_ion(i)=I_inj(i)-(I_Na(i))-(I_K(i))-(I_L(i));
+
+%Update the Voltage to the next value using Euler's method
+
+V_new(i)=V(i)+(frac.*(I_ion(i)/C_m));
+V(i+1)=V_new(i);
 end
 
 % plot(t,V_rest,'r-');subplot(3,1,1);plot(t,gK,'r-');subplot(3,1,2);plot(t,gNa,'b-');subplot(3,1,3);
-% plot(t,V_new,'r-');
+% plot(t,V(1:length(t)),'r-');
 % plot(t,n,'b-');
 % plot(t,m,'g-');
 
