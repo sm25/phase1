@@ -14,8 +14,8 @@ frac=0.00025;       %factor by which time is incrementing
 
 %Initialize V with the first value as V_rest
 V_new=zeros([1 length(t)]);     
-V_i=zeros([1 (length(t)-1)]);
-V=[V_rest V_i];
+V=zeros([1 length(t)]);
+V(1)=V_rest;
 %Initialize the gating variables
 alpha_m=zeros([1 length(t)]);
 alpha_n=zeros([1 length(t)]);
@@ -24,9 +24,6 @@ beta_m=zeros([1 length(t)]);
 beta_n=zeros([1 length(t)]);
 beta_h=zeros([1 length(t)]);
 %Initialize the conductance related variables
-m0=zeros([1 length(t)]);
-n0=zeros([1 length(t)]);
-h0=zeros([1 length(t)]);
 m=zeros([1 length(t)]);
 n=zeros([1 length(t)]);
 h=zeros([1 length(t)]);
@@ -64,9 +61,9 @@ h(1) = alpha_h(1)./(alpha_h(1)+beta_h(1));
 
 %Update the variables to the next value using Euler's method
 
-m(i) = m(i) + frac.*(alpha_m(i).*(1-m(i)) - (beta_m(i).*m(i)));
-n(i) = n(i) + frac.*(alpha_n(i).*(1-n(i)) - (beta_n(i).*n(i)));
-h(i) = h(i) + frac.*(alpha_h(i).*(1-h(i)) - (beta_h(i).*h(i)));
+m(i+1) = m(i) + frac.*(alpha_m(i).*(1-m(i)) - (beta_m(i).*m(i)));
+n(i+1) = n(i) + frac.*(alpha_n(i).*(1-n(i)) - (beta_n(i).*n(i)));
+h(i+1) = h(i) + frac.*(alpha_h(i).*(1-h(i)) - (beta_h(i).*h(i)));
 
 % Currents, calculate the current values
 
