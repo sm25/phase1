@@ -44,7 +44,7 @@ I_inj=zeros([1 length(t)]);
 % % I_inj(1, 10:(9+a))=((5*10^(-6))*I_inj_1);
 
 
-for i=1:length(t)
+for i=1:(length(t)-1)
     
 %Calculate values for the gating variables
 alpha_m(i)= 0.1*((25-V(i))/exp((25-V(i))/10)-1);
@@ -57,16 +57,16 @@ beta_h(i)=1./(exp((30-V(i))/10)+1);
 
 %Calculate values for the conductance related variables
 
-m0(i) = alpha_m(i)./(alpha_m(i)+beta_m(i));
-n0(i) = alpha_n(i)./(alpha_n(i)+beta_n(i));
-h0(i) = alpha_h(i)./(alpha_h(i)+beta_h(i));
+m(1) = alpha_m(1)./(alpha_m(1)+beta_m(1));
+n(1) = alpha_n(1)./(alpha_n(1)+beta_n(1));
+h(1) = alpha_h(1)./(alpha_h(1)+beta_h(1));
 
 
 %Update the variables to the next value using Euler's method
 
-m(i) = m0(i) + frac.*(alpha_m(i).*(1-m0(i)) - (beta_m(i).*m0(i)));
-n(i) = n0(i) + frac.*(alpha_n(i).*(1-n0(i)) - (beta_n(i).*n0(i)));
-h(i) = h0(i) + frac.*(alpha_h(i).*(1-h0(i)) - (beta_h(i).*h0(i)));
+m(i) = m(i) + frac.*(alpha_m(i).*(1-m(i)) - (beta_m(i).*m(i)));
+n(i) = n(i) + frac.*(alpha_n(i).*(1-n(i)) - (beta_n(i).*n(i)));
+h(i) = h(i) + frac.*(alpha_h(i).*(1-h(i)) - (beta_h(i).*h(i)));
 
 % Currents, calculate the current values
 
